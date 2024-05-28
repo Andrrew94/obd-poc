@@ -37,9 +37,11 @@ async function connectToObd() {
         }
         console.log('Connected to', device.advertisement.localName);
 
+        const adaptorName = await promptUser('Insert adaptor name so I can group the logs separately: ');
+
         const adaptorDataPrompt = await promptUser('Do you want to save ADAPTOR DATA json? (yes/no): ');
           if (adaptorDataPrompt.toLowerCase() === 'yes') {
-            fs.writeFile(`adaptor-data.json`, JSON.stringify(device, null, 2), (err) => {
+            fs.writeFile(`${adaptorName}-adaptor-data.json`, JSON.stringify(device, null, 2), (err) => {
               if (err) {
                 console.error('Error saving file:', err);
               } else {
@@ -77,7 +79,7 @@ async function connectToObd() {
 
           const adaptorServicesPrompt = await promptUser('Do you want to save ADAPTOR SERVICES json data? (yes/no): ');
           if (adaptorServicesPrompt.toLowerCase() === 'yes') {
-            fs.writeFile(`adaptor-services.json`, JSON.stringify(services, null, 2), (err) => {
+            fs.writeFile(`${adaptorName}-adaptor-services.json`, JSON.stringify(services, null, 2), (err) => {
               if (err) {
                 console.error('Error saving file:', err);
               } else {
@@ -92,7 +94,7 @@ async function connectToObd() {
 
           const adaptorCharacteristicsPrompt = await promptUser('Do you want to save ADAPTOR CHARACTERISTICS json data? (yes/no): ');
           if (adaptorCharacteristicsPrompt.toLowerCase() === 'yes') {
-            fs.writeFile(`adaptor-characteristics.json`, JSON.stringify(characteristics, null, 2), (err) => {
+            fs.writeFile(`${adaptorName}-adaptor-characteristics.json`, JSON.stringify(characteristics, null, 2), (err) => {
               if (err) {
                 console.error('Error saving file:', err);
               } else {
@@ -111,11 +113,11 @@ async function connectToObd() {
           await initializeObdAdapter(writeCharacteristic);
 
           // Scan for supported PIDs
-          const supportedPids = await scanForSupportedPids(writeCharacteristic);
+          const supportedPids = await scanForSupportedPids(writeCharacteristic, adaptorName);
 
           const supportedPidsPrompt = await promptUser('Do you want to save SUPPORTED PIDS json data? (yes/no): ');
           if (supportedPidsPrompt.toLowerCase() === 'yes') {
-            fs.writeFile(`adaptor-supportedPids.json`, JSON.stringify(supportedPids, null, 2), (err) => {
+            fs.writeFile(`${adaptorName}-supportedPids.json`, JSON.stringify(supportedPids, null, 2), (err) => {
               if (err) {
                 console.error('Error saving file:', err);
               } else {
@@ -133,7 +135,7 @@ async function connectToObd() {
 
           const supportedPIDsResponsesPrompt = await promptUser('Do you want to save QUERIED SUPPORTED PIDS RESPONSES json data? (yes/no): ');
           if (supportedPIDsResponsesPrompt.toLowerCase() === 'yes') {
-            fs.writeFile(`adaptor-supportedPidsResponses.json`, JSON.stringify(data, null, 2), (err) => {
+            fs.writeFile(`${adaptorName}-supportedPidsResponses.json`, JSON.stringify(data, null, 2), (err) => {
               if (err) {
                 console.error('Error saving file:', err);
               } else {
@@ -214,7 +216,7 @@ async function initializeObdAdapter(writeCharacteristic) {
   }
 }
 
-async function scanForSupportedPids(writeCharacteristic) {
+async function scanForSupportedPids(writeCharacteristic, adaptorName) {
   const supportedPids = [];
   const responsesToLog = [];
   for (let i = 0; i <= 0x60; i += 0x20) {
@@ -244,7 +246,7 @@ async function scanForSupportedPids(writeCharacteristic) {
   // todo: remove this after debug
   const responsesToLogPrompt = await promptUser('Do you want to save scanForSupportedPids-sendObdCommand-function-result json data? (yes/no): ');
   if (responsesToLogPrompt.toLowerCase() === 'yes') {
-    fs.writeFile(`adaptor-scanForSupportedPids-sendObdCommand-function-result.json`, JSON.stringify(data, null, 2), (err) => {
+    fs.writeFile(`${adaptorName}-scanForSupportedPids-sendObdCommand-function-result.json`, JSON.stringify(data, null, 2), (err) => {
       if (err) {
         console.error('Error saving file:', err);
       } else {
