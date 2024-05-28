@@ -1,0 +1,84 @@
+{
+  "id": "661e110efd50",
+  "name": "OBD BLE",
+  "services": [
+    {
+      "uuid": "1800",
+      "characteristics": [
+        {
+          "uuid": "2a00",
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "uuid": "2a01",
+          "properties": [
+            "read"
+          ]
+        },
+        {
+          "uuid": "2a04",
+          "properties": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "uuid": "1801",
+      "characteristics": [
+        {
+          "uuid": "2a05",
+          "properties": [
+            "indicate"
+          ]
+        }
+      ]
+    },
+    {
+      "uuid": "1804",
+      "characteristics": [
+        {
+          "uuid": "2a07",
+          "properties": [
+            "read",
+            "writeWithoutResponse"
+          ]
+        }
+      ]
+    },
+    {
+      "uuid": "180f",
+      "characteristics": [
+        {
+          "uuid": "2a19",
+          "properties": [
+            "read",
+            "notify"
+          ]
+        }
+      ]
+    },
+    {
+      "uuid": "fff0",
+      "characteristics": [
+        {
+          "uuid": "fff1",
+          "properties": [
+            "read",
+            "notify"
+          ]
+        },
+        {
+          "uuid": "fff2",
+          "properties": [
+            "writeWithoutResponse",
+            "write"
+          ]
+        }
+      ]
+    }
+  ]
+}
