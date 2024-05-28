@@ -1,0 +1,257 @@
+[[
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+],{
+  "_noble": "6",
+  "_peripheralId": "7",
+  "uuid": "8",
+  "name": "9",
+  "type": "10",
+  "includedServiceUuids": null,
+  "characteristics": "11",
+  "_events": "12",
+  "_eventsCount": 0
+},{
+  "_noble": "6",
+  "_peripheralId": "7",
+  "uuid": "13",
+  "name": "14",
+  "type": "15",
+  "includedServiceUuids": null,
+  "characteristics": "16",
+  "_events": "17",
+  "_eventsCount": 0
+},{
+  "_noble": "6",
+  "_peripheralId": "7",
+  "uuid": "18",
+  "name": "19",
+  "type": "20",
+  "includedServiceUuids": null,
+  "characteristics": "21",
+  "_events": "22",
+  "_eventsCount": 0
+},{
+  "_noble": "6",
+  "_peripheralId": "7",
+  "uuid": "23",
+  "name": "24",
+  "type": "25",
+  "includedServiceUuids": null,
+  "characteristics": "26",
+  "_events": "27",
+  "_eventsCount": 0
+},{
+  "_noble": "6",
+  "_peripheralId": "7",
+  "uuid": "28",
+  "name": null,
+  "type": null,
+  "includedServiceUuids": null,
+  "characteristics": "29",
+  "_events": "30",
+  "_eventsCount": 0
+},{
+  "initialized": true,
+  "address": "31",
+  "_state": "32",
+  "_bindings": "33",
+  "_peripherals": "34",
+  "_services": "35",
+  "_characteristics": "36",
+  "_descriptors": "37",
+  "_discoveredPeripheralUUids": "38",
+  "_events": "39",
+  "_eventsCount": 4
+},"661e110efd50","1800","Generic Access","org.bluetooth.service.generic_access",[
+  "40",
+  "41",
+  "42"
+],{},"1801","Generic Attribute","org.bluetooth.service.generic_attribute",[
+  "43"
+],{},"1804","Tx Power","org.bluetooth.service.tx_power",[
+  "44"
+],{},"180f","Battery Service","org.bluetooth.service.battery_service",[
+  "45"
+],{},"fff0",[
+  "46",
+  "47"
+],{},"unknown","poweredOn",{
+  "_events": "48",
+  "_eventsCount": 25
+},{
+  "661e110efd50": "49"
+},{
+  "661e110efd50": "50"
+},{
+  "661e110efd50": "51"
+},{
+  "661e110efd50": "52"
+},{
+  "661e110efd50": true
+},{},{
+  "_noble": "6",
+  "_peripheralId": "7",
+  "_serviceUuid": "8",
+  "uuid": "53",
+  "name": "54",
+  "type": "55",
+  "properties": "56",
+  "descriptors": null
+},{
+  "_noble": "6",
+  "_peripheralId": "7",
+  "_serviceUuid": "8",
+  "uuid": "57",
+  "name": "58",
+  "type": "59",
+  "properties": "60",
+  "descriptors": null
+},{
+  "_noble": "6",
+  "_peripheralId": "7",
+  "_serviceUuid": "8",
+  "uuid": "61",
+  "name": "62",
+  "type": "63",
+  "properties": "64",
+  "descriptors": null
+},{
+  "_noble": "6",
+  "_peripheralId": "7",
+  "_serviceUuid": "13",
+  "uuid": "65",
+  "name": "66",
+  "type": "67",
+  "properties": "68",
+  "descriptors": null
+},{
+  "_noble": "6",
+  "_peripheralId": "7",
+  "_serviceUuid": "18",
+  "uuid": "69",
+  "name": "70",
+  "type": "71",
+  "properties": "72",
+  "descriptors": null
+},{
+  "_noble": "6",
+  "_peripheralId": "7",
+  "_serviceUuid": "23",
+  "uuid": "73",
+  "name": "74",
+  "type": "75",
+  "properties": "76",
+  "descriptors": null
+},{
+  "_noble": "6",
+  "_peripheralId": "7",
+  "_serviceUuid": "28",
+  "uuid": "77",
+  "name": null,
+  "type": null,
+  "properties": "78",
+  "descriptors": null
+},{
+  "_noble": "6",
+  "_peripheralId": "7",
+  "_serviceUuid": "28",
+  "uuid": "79",
+  "name": null,
+  "type": null,
+  "properties": "80",
+  "descriptors": null
+},{},{
+  "_noble": "6",
+  "id": "7",
+  "uuid": "7",
+  "address": "81",
+  "addressType": "82",
+  "connectable": true,
+  "advertisement": "83",
+  "rssi": -36,
+  "services": "0",
+  "mtu": null,
+  "state": "84",
+  "_events": "85",
+  "_eventsCount": 1
+},{
+  "1800": "1",
+  "1801": "2",
+  "1804": "3",
+  "180f": "4",
+  "fff0": "5"
+},{
+  "1800": "86",
+  "1801": "87",
+  "1804": "88",
+  "180f": "89",
+  "fff0": "90"
+},{
+  "1800": "91",
+  "1801": "92",
+  "1804": "93",
+  "180f": "94",
+  "fff0": "95"
+},"2a00","Device Name","org.bluetooth.characteristic.gap.device_name",[
+  "96",
+  "97"
+],"2a01","Appearance","org.bluetooth.characteristic.gap.appearance",[
+  "96"
+],"2a04","Peripheral Preferred Connection Parameters","org.bluetooth.characteristic.gap.peripheral_preferred_connection_parameters",[
+  "96"
+],"2a05","Service Changed","org.bluetooth.characteristic.gatt.service_changed",[
+  "98"
+],"2a07","Tx Power Level","org.bluetooth.characteristic.tx_power_level",[
+  "96",
+  "99"
+],"2a19","Battery Level","org.bluetooth.characteristic.battery_level",[
+  "96",
+  "100"
+],"fff1",[
+  "96",
+  "100"
+],"fff2",[
+  "99",
+  "97"
+],"66:1e:11:0e:fd:50","public",{
+  "localName": "101",
+  "txPowerLevel": 0,
+  "manufacturerData": "102",
+  "serviceData": "103",
+  "serviceUuids": "104"
+},"connected",{},{
+  "2a00": "40",
+  "2a01": "41",
+  "2a04": "42"
+},{
+  "2a05": "43"
+},{
+  "2a07": "44"
+},{
+  "2a19": "45"
+},{
+  "fff1": "46",
+  "fff2": "47"
+},{
+  "2a00": "105",
+  "2a01": "106",
+  "2a04": "107"
+},{
+  "2a05": "108"
+},{
+  "2a07": "109"
+},{
+  "2a19": "110"
+},{
+  "fff1": "111",
+  "fff2": "112"
+},"read","write","indicate","writeWithoutResponse","notify","OBD BLE",{
+  "type": "113",
+  "data": "114"
+},[],[
+  "28"
+],{},{},{},{},{},{},{},{},"Buffer",[]]

@@ -1,0 +1,51 @@
+[{
+  "_noble": "1",
+  "id": "2",
+  "uuid": "2",
+  "address": "3",
+  "addressType": "4",
+  "connectable": true,
+  "advertisement": "5",
+  "rssi": -36,
+  "services": null,
+  "mtu": null,
+  "state": "6",
+  "_events": "7",
+  "_eventsCount": 1
+},{
+  "initialized": true,
+  "address": "8",
+  "_state": "9",
+  "_bindings": "10",
+  "_peripherals": "11",
+  "_services": "12",
+  "_characteristics": "13",
+  "_descriptors": "14",
+  "_discoveredPeripheralUUids": "15",
+  "_events": "16",
+  "_eventsCount": 4
+},"661e110efd50","66:1e:11:0e:fd:50","public",{
+  "localName": "17",
+  "txPowerLevel": 0,
+  "manufacturerData": "18",
+  "serviceData": "19",
+  "serviceUuids": "20"
+},"connected",{},"unknown","poweredOn",{
+  "_events": "21",
+  "_eventsCount": 25
+},{
+  "661e110efd50": "0"
+},{
+  "661e110efd50": "22"
+},{
+  "661e110efd50": "23"
+},{
+  "661e110efd50": "24"
+},{
+  "661e110efd50": true
+},{},"OBD BLE",{
+  "type": "25",
+  "data": "26"
+},[],[
+  "27"
+],{},{},{},{},"Buffer",[],"fff0"]

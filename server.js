@@ -1,6 +1,7 @@
 const noble = require('@abandonware/noble');
 const readline = require('readline');
 const fs = require('fs');
+const { stringify } = require('flatted');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -41,17 +42,15 @@ async function connectToObd() {
 
         const adaptorDataPrompt = await promptUser('Do you want to save ADAPTOR DATA json? (yes/no): ');
           if (adaptorDataPrompt.toLowerCase() === 'yes') {
-            fs.writeFile(`${adaptorName}-adaptor-data.json`, JSON.stringify(device, null, 2), (err) => {
+            fs.writeFile(`${adaptorName}-adaptor-data.json`, stringify(device, null, 2), (err) => {
               if (err) {
                 console.error('Error saving file:', err);
               } else {
                 console.log('Data saved successfully.');
               }
-              rl.close();
             });
           } else {
             console.log('Data not saved.');
-            rl.close();
           }
 
         device.discoverAllServicesAndCharacteristics(async (error, services, characteristics) => {
@@ -79,32 +78,28 @@ async function connectToObd() {
 
           const adaptorServicesPrompt = await promptUser('Do you want to save ADAPTOR SERVICES json data? (yes/no): ');
           if (adaptorServicesPrompt.toLowerCase() === 'yes') {
-            fs.writeFile(`${adaptorName}-adaptor-services.json`, JSON.stringify(services, null, 2), (err) => {
+            fs.writeFile(`${adaptorName}-adaptor-services.json`, stringify(services, null, 2), (err) => {
               if (err) {
                 console.error('Error saving file:', err);
               } else {
                 console.log('Data saved successfully.');
               }
-              rl.close();
             });
           } else {
             console.log('Data not saved.');
-            rl.close();
           }
 
           const adaptorCharacteristicsPrompt = await promptUser('Do you want to save ADAPTOR CHARACTERISTICS json data? (yes/no): ');
           if (adaptorCharacteristicsPrompt.toLowerCase() === 'yes') {
-            fs.writeFile(`${adaptorName}-adaptor-characteristics.json`, JSON.stringify(characteristics, null, 2), (err) => {
+            fs.writeFile(`${adaptorName}-adaptor-characteristics.json`, stringify(characteristics, null, 2), (err) => {
               if (err) {
                 console.error('Error saving file:', err);
               } else {
                 console.log('Data saved successfully.');
               }
-              rl.close();
             });
           } else {
             console.log('Data not saved.');
-            rl.close();
           }
 
           await subscribeToNotifications(notifyCharacteristic);
@@ -117,17 +112,15 @@ async function connectToObd() {
 
           const supportedPidsPrompt = await promptUser('Do you want to save SUPPORTED PIDS json data? (yes/no): ');
           if (supportedPidsPrompt.toLowerCase() === 'yes') {
-            fs.writeFile(`${adaptorName}-supportedPids.json`, JSON.stringify(supportedPids, null, 2), (err) => {
+            fs.writeFile(`${adaptorName}-supportedPids.json`, stringify(supportedPids, null, 2), (err) => {
               if (err) {
                 console.error('Error saving file:', err);
               } else {
                 console.log('Data saved successfully.');
               }
-              rl.close();
             });
           } else {
             console.log('Data not saved.');
-            rl.close();
           }
 
           // Query each supported PID
@@ -135,19 +128,18 @@ async function connectToObd() {
 
           const supportedPIDsResponsesPrompt = await promptUser('Do you want to save QUERIED SUPPORTED PIDS RESPONSES json data? (yes/no): ');
           if (supportedPIDsResponsesPrompt.toLowerCase() === 'yes') {
-            fs.writeFile(`${adaptorName}-supportedPidsResponses.json`, JSON.stringify(data, null, 2), (err) => {
+            fs.writeFile(`${adaptorName}-supportedPidsResponses.json`, stringify(data, null, 2), (err) => {
               if (err) {
                 console.error('Error saving file:', err);
               } else {
                 console.log('Data saved successfully.');
               }
-              rl.close();
             });
           } else {
             console.log('Data not saved.');
-            rl.close();
           }
 
+          rl.close();
           process.exit(0);
 
           // console.log('OBD Data:', JSON.stringify(data, null, 2));
@@ -246,17 +238,15 @@ async function scanForSupportedPids(writeCharacteristic, adaptorName) {
   // todo: remove this after debug
   const responsesToLogPrompt = await promptUser('Do you want to save scanForSupportedPids-sendObdCommand-function-result json data? (yes/no): ');
   if (responsesToLogPrompt.toLowerCase() === 'yes') {
-    fs.writeFile(`${adaptorName}-scanForSupportedPids-sendObdCommand-function-result.json`, JSON.stringify(data, null, 2), (err) => {
+    fs.writeFile(`${adaptorName}-scanForSupportedPids-sendObdCommand-function-result.json`, stringify(data, null, 2), (err) => {
       if (err) {
         console.error('Error saving file:', err);
       } else {
         console.log('Data saved successfully.');
       }
-      rl.close();
     });
   } else {
     console.log('Data not saved.');
-    rl.close();
   }
 
 
