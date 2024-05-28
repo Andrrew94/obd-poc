@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
+    "flatten-parse": "node flattedParser.js",
     "decode": "nodemon decoder.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
