@@ -1,5 +1,5 @@
 // index.js
-const { connectToOBD, disconnectOBD, verifyOBDConnection, requestData } = require('./bluetoothManager');
+const { connectToOBD, disconnectOBD, verifyOBDConnection, requestSupportedPIDs, requestData } = require('./bluetoothManager');
 const { discoverDevices } = require('./discoverDevices');
 
 const main = async () => {
@@ -28,18 +28,28 @@ const main = async () => {
       await verifyOBDConnection();
       console.log('Verified OBD-II adapter.');
 
-      // Request specific data (e.g., vehicle speed)
-      requestData('vss');
+      // Request supported PIDs
+      const supportedPIDs = await requestSupportedPIDs();
+      console.log('Supported PIDs:', supportedPIDs);
+
+      // Check if PID 0D is supported
+      if (supportedPIDs.includes('0D')) {
+        console.log('PID 0D is supported, requesting vehicle speed...');
+        requestData('0D'); // PID for vehicle speed
+      } else {
+        console.log('PID 0D is not supported.');
+      }
     } catch (verificationError) {
       console.log('Verification failed:', verificationError);
       disconnectOBD();
+      return;
     }
 
-    // Disconnect after some time or based on some condition
+    // Wait for some time to ensure data is received before disconnecting
     setTimeout(() => {
       disconnectOBD();
       console.log('Disconnected.');
-    }, 10000); // Adjust the timeout as needed
+    }, 15000); // Adjust the timeout as needed to ensure data reception
 
   } catch (error) {
     console.error('Error:', error);
