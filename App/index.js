@@ -1,6 +1,6 @@
 // index.js
-const { connectToOBD, disconnectOBD, verifyOBDConnection, requestSupportedPIDs, requestData } = require('./bluetoothManager');
-const { discoverDevices } = require('./discoverDevices');
+const { disconnectOBD, requestSupportedPIDs, requestData } = require('./bluetoothManager');
+const { discoverDevices, identifyOBDDevice } = require('./discoverDevices');
 
 const main = async () => {
   try {
@@ -8,46 +8,36 @@ const main = async () => {
     const devices = await discoverDevices();
     console.log('Devices found:', devices);
 
-    // Filter devices for known OBD-II adapter name patterns or unnamed devices
-    const obdDevice = devices.find(device => /OBD|OBDII|OBD2/i.test(device.name) || device.name === '(Unnamed Device)');
-
+    const obdDevice = await identifyOBDDevice(devices);
     if (!obdDevice) {
       console.log('No OBD-II adapter found.');
       return;
     }
+    console.log('OBD-II device found:', obdDevice);
 
-    const { address } = obdDevice;
-    const channel = 1; // Usually 1, but may need adjustment
+    const { serial } = obdDevice;
 
-    console.log(`Connecting to Bluetooth device at address ${address}, channel ${channel}...`);
-    await connectToOBD(address, channel);
-    console.log('Connected to Bluetooth device.');
-
-    console.log('Verifying OBD-II connection...');
     try {
-      await verifyOBDConnection();
-      console.log('Verified OBD-II adapter.');
-
       // Request supported PIDs
-      const supportedPIDs = await requestSupportedPIDs();
+      const supportedPIDs = await requestSupportedPIDs(serial);
       console.log('Supported PIDs:', supportedPIDs);
 
       // Check if PID 0D is supported
       if (supportedPIDs.includes('0D')) {
         console.log('PID 0D is supported, requesting vehicle speed...');
-        requestData('0D'); // PID for vehicle speed
+        requestData('0D', serial); // PID for vehicle speed
       } else {
         console.log('PID 0D is not supported.');
       }
     } catch (verificationError) {
       console.log('Verification failed:', verificationError);
-      disconnectOBD();
+      disconnectOBD(serial);
       return;
     }
 
     // Wait for some time to ensure data is received before disconnecting
     setTimeout(() => {
-      disconnectOBD();
+      disconnectOBD(serial);
       console.log('Disconnected.');
     }, 15000); // Adjust the timeout as needed to ensure data reception
 

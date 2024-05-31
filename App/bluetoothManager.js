@@ -1,93 +1,81 @@
 // bluetoothManager.js
-const bluetooth = require('bluetooth-serial-port');
-const SerialPort = bluetooth.BluetoothSerialPort;
+// const bluetooth = require('bluetooth-serial-port');
+// const SerialPort = bluetooth.BluetoothSerialPort;
 
-const serial = new SerialPort();
-let isConnected = false;
+// const serial = new SerialPort();
+// let isConnected = false;
 let currentDataHandler = null;
 let buffer = '';
 
-const connectToOBD = (address, channel) => {
-  return new Promise((resolve, reject) => {
-    serial.connect(address, channel, () => {
-      console.log('Connected to Bluetooth device');
-      isConnected = true;
-      resolve();
-    }, (err) => {
-      reject(err);
-    });
-  });
-};
-
-const disconnectOBD = () => {
-  if (serial.isOpen()) {
-    serial.close(() => {
+const disconnectOBD = (serialConnection) => {
+  if (serialConnection.isOpen()) {
+    serialConnection.close(() => {
       console.log('Disconnected from OBD-II adapter');
-      isConnected = false;
+      // isConnected = false;
     });
   }
 };
 
-const verifyOBDConnection = () => {
+// const verifyOBDConnection = () => {
+//   return new Promise((resolve, reject) => {
+//     if (!isConnected) {
+//       return reject('Not connected to any OBD-II adapter');
+//     }
+
+//     // Clear any previous listeners
+//     serial.removeAllListeners('data');
+
+//     // Send an OBD-II command to request RPM (PID 010C)
+//     const command = Buffer.from('010C\r', 'utf8');
+//     serial.write(command, (err, bytesWritten) => {
+//       if (err) {
+//         return reject(err);
+//       }
+//       console.log(`Sent ${bytesWritten} bytes to request RPM`);
+
+//       buffer = '';
+//       currentDataHandler = (data) => {
+//         buffer += data.toString('utf8');
+//         const responses = buffer.split('\r');
+//         buffer = responses.pop(); // Keep incomplete response in buffer
+
+//         for (let response of responses) {
+//           response = response.trim();
+//           console.log('Received data:', response);
+
+//           // Basic verification of OBD-II response
+//           if (response.startsWith('41 0C')) {
+//             const rpmHex = response.split(' ').slice(2).join('');
+//             const rpm = parseInt(rpmHex, 16) / 4;
+//             console.log(`RPM: ${rpm}`);
+//             resolve(true);
+//             return;  // Exit after processing valid response
+//           } else if (response.startsWith('NO DATA')) {
+//             reject('No data received');
+//             return;
+//           }
+//         }
+//         // If no valid response was found in the loop, reject
+//         reject('Invalid OBD-II response');
+//       };
+
+//       serial.on('data', currentDataHandler);
+//     });
+//   });
+// };
+
+const requestSupportedPIDs = (serialConnection) => {
   return new Promise((resolve, reject) => {
-    if (!isConnected) {
+    if (!serialConnection) {
       return reject('Not connected to any OBD-II adapter');
     }
 
     // Clear any previous listeners
-    serial.removeAllListeners('data');
-
-    // Send an OBD-II command to request RPM (PID 010C)
-    const command = Buffer.from('010C\r', 'utf8');
-    serial.write(command, (err, bytesWritten) => {
-      if (err) {
-        return reject(err);
-      }
-      console.log(`Sent ${bytesWritten} bytes to request RPM`);
-
-      buffer = '';
-      currentDataHandler = (data) => {
-        buffer += data.toString('utf8');
-        const responses = buffer.split('\r');
-        buffer = responses.pop(); // Keep incomplete response in buffer
-
-        for (let response of responses) {
-          response = response.trim();
-          console.log('Received data:', response);
-
-          // Basic verification of OBD-II response
-          if (response.startsWith('41 0C')) {
-            const rpmHex = response.split(' ').slice(2).join('');
-            const rpm = parseInt(rpmHex, 16) / 4;
-            console.log(`RPM: ${rpm}`);
-            resolve(true);
-            return;  // Exit after processing valid response
-          } else if (response.startsWith('NO DATA')) {
-            reject('No data received');
-            return;
-          }
-        }
-        // If no valid response was found in the loop, reject
-        reject('Invalid OBD-II response');
-      };
-
-      serial.on('data', currentDataHandler);
-    });
-  });
-};
-
-const requestSupportedPIDs = () => {
-  return new Promise((resolve, reject) => {
-    if (!isConnected) {
-      return reject('Not connected to any OBD-II adapter');
-    }
-
-    // Clear any previous listeners
-    serial.removeAllListeners('data');
+    serialConnection.removeAllListeners('data');
 
     // Send an OBD-II command to request supported PIDs (PID 0100)
     const command = Buffer.from('0100\r', 'utf8');
-    serial.write(command, (err, bytesWritten) => {
+    serialConnection.write(command, (err, bytesWritten) => {
       if (err) {
         return reject(err);
       }
@@ -113,15 +101,15 @@ const requestSupportedPIDs = () => {
         reject('Invalid response for supported PIDs');
       };
 
-      serial.on('data', currentDataHandler);
+      serialConnection.on('data', currentDataHandler);
     });
   });
 };
 
-const requestData = (pid) => {
-  if (isConnected) {
+const requestData = (pid, serialConnection) => {
+  if (serialConnection) {
     const command = Buffer.from(`01${pid}\r`, 'utf8');
-    serial.write(command, (err, bytesWritten) => {
+    serialConnection.write(command, (err, bytesWritten) => {
       if (err) {
         console.log('Error sending command:', err);
       } else {
@@ -149,16 +137,16 @@ const requestData = (pid) => {
       }
     };
 
-    serial.on('data', currentDataHandler);
+    serialConnection.on('data', currentDataHandler);
   } else {
     console.log('Not connected to OBD-II adapter');
   }
 };
 
 module.exports = {
-  connectToOBD,
+  // connectToOBD,
   disconnectOBD,
-  verifyOBDConnection,
+  // verifyOBDConnection,
   requestSupportedPIDs,
   requestData,
 };
