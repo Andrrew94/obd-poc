@@ -64,45 +64,51 @@ const disconnectOBD = (serialConnection) => {
 //   });
 // };
 
-const requestSupportedPIDs = (serialConnection) => {
+const getSupportedPIDs = (serial) => {
   return new Promise((resolve, reject) => {
-    if (!serialConnection) {
-      return reject('Not connected to any OBD-II adapter');
-    }
+    const supportedPIDs = [];
 
-    // Clear any previous listeners
-    serialConnection.removeAllListeners('data');
-
-    // Send an OBD-II command to request supported PIDs (PID 0100)
-    const command = Buffer.from('0100\r', 'utf8');
-    serialConnection.write(command, (err, bytesWritten) => {
-      if (err) {
-        return reject(err);
-      }
-      console.log(`Sent ${bytesWritten} bytes to request supported PIDs`);
-
-      buffer = '';
-      currentDataHandler = (data) => {
-        buffer += data.toString('utf8');
-        const responses = buffer.split('\r');
-        buffer = responses.pop(); // Keep incomplete response in buffer
-
-        for (let response of responses) {
-          response = response.trim();
-          console.log('Received data:', response);
-
-          // Check if the response contains the supported PIDs
-          if (response.startsWith('41 00')) {
-            resolve(response);
-            return;  // Exit after processing valid response
-          }
+    const requestPIDs = (pid, callback) => {
+      serial.write(Buffer.from(`${pid}\r`), (err) => {
+        if (err) {
+          reject(err);
+          return;
         }
-        // If no valid response was found in the loop, reject
-        reject('Invalid response for supported PIDs');
-      };
 
-      serialConnection.on('data', currentDataHandler);
-    });
+        serial.on('data', (buffer) => {
+          const data = buffer.toString('utf8').trim();
+          if (data.startsWith('41')) {
+            callback(data);
+          } else {
+            reject(new Error(`Unexpected response: ${data}`));
+          }
+        });
+      });
+    };
+
+    const processPIDResponse = (response) => {
+      const pids = response.slice(6); // Remove '41 00 ' or similar prefix
+      supportedPIDs.push(pids);
+    };
+
+    const pidsToRequest = ['0100', '0120', '0140', '0160'];
+    let currentRequestIndex = 0;
+
+    const nextRequest = () => {
+      if (currentRequestIndex >= pidsToRequest.length) {
+        resolve(supportedPIDs.join(' '));
+        return;
+      }
+
+      const currentPID = pidsToRequest[currentRequestIndex];
+      requestPIDs(currentPID, (response) => {
+        processPIDResponse(response);
+        currentRequestIndex++;
+        nextRequest();
+      });
+    };
+
+    nextRequest();
   });
 };
 
@@ -147,6 +153,6 @@ module.exports = {
   // connectToOBD,
   disconnectOBD,
   // verifyOBDConnection,
-  requestSupportedPIDs,
+  getSupportedPIDs,
   requestData,
 };
