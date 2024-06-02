@@ -1,4 +1,4 @@
-export const MODE_1_PIDS = {
+const MODE_1_PIDS = {
     "00": {
       PID: "00",
       Description: "PIDs supported [01 - 20]",

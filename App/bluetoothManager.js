@@ -3,6 +3,7 @@
 
 // const serial = new SerialPort();
 // let isConnected = false;
+const log = require('node-gyp/lib/log');
 const { MODE_1_PIDS } = require('./Modes/mode-1-pids');
 let currentDataHandler = null;
 let buffer = '';
@@ -69,26 +70,40 @@ const getSupportedPIDs = (serial) => {
     const supportedPIDs = [];
 
     const requestPIDs = (pid, callback) => {
+      console.log('Requesting PID:', pid);
       serial.write(Buffer.from(`${pid}\r`), (err) => {
         if (err) {
           reject(err);
           return;
         }
 
-        serial.on('data', (buffer) => {
+        const onData = (buffer) => {
           const data = buffer.toString('utf8').trim();
+          console.log('Data received:', data);
           if (data.startsWith('41')) {
+            serial.off('data', onData);
             callback(data);
           } else {
+            serial.off('data', onData);
             reject(new Error(`Unexpected response: ${data}`));
           }
-        });
+        };
+
+        serial.on('data', onData);
       });
     };
 
     const processPIDResponse = (response) => {
-      const pids = response.slice(6); // Remove '41 00 ' or similar prefix
-      supportedPIDs.push(pids);
+      const hexString = response.slice(6); // Remove '41 00 ' or similar prefix
+      for (let i = 0; i < hexString.length; i += 2) {
+        const byte = parseInt(hexString.substr(i, 2), 16);
+        for (let j = 0; j < 8; j++) {
+          if (byte & (1 << (7 - j))) {
+            const pid = ((i / 2) * 8) + j + 1;
+            supportedPIDs.push(pid.toString(16).padStart(2, '0'));
+          }
+        }
+      }
     };
 
     const pidsToRequest = ['0100', '0120', '0140', '0160'];
@@ -96,7 +111,7 @@ const getSupportedPIDs = (serial) => {
 
     const nextRequest = () => {
       if (currentRequestIndex >= pidsToRequest.length) {
-        resolve(supportedPIDs.join(' '));
+        resolve(supportedPIDs);
         return;
       }
 
@@ -111,7 +126,6 @@ const getSupportedPIDs = (serial) => {
     nextRequest();
   });
 };
-
 // Utility function to interpret PID values
 const interpretPID = (pid, response) => {
   const pidInfo = MODE_1_PIDS[pid];
@@ -133,11 +147,10 @@ const interpretPID = (pid, response) => {
 };
 
 // array of promises to request all supported pids values
-const getSupportedPidValues = async (supportedPIDs, serial) => {
+const getSupportedPidValues = async (serial, supportedPIDs) => {
   const pidValues = [];
 
-  for (let i = 0; i < supportedPIDs.length; i++) {
-    const pid = supportedPIDs[i];
+  for (const pid of supportedPIDs) {
     await new Promise((resolve, reject) => {
       serial.write(Buffer.from(`${pid}\r`), (err) => {
         if (err) {
@@ -145,9 +158,10 @@ const getSupportedPidValues = async (supportedPIDs, serial) => {
           return;
         }
 
-        serial.on('data', (buffer) => {
+        const onData = (buffer) => {
           const data = buffer.toString('utf8').trim();
           if (data.startsWith('41')) {
+            serial.off('data', onData);
             const responseBytes = data.slice(3).match(/.{1,2}/g).map(byte => parseInt(byte, 16));
             try {
               const interpretedValue = interpretPID(pid, responseBytes);
@@ -161,9 +175,12 @@ const getSupportedPidValues = async (supportedPIDs, serial) => {
               reject(error);
             }
           } else {
+            serial.off('data', onData);
             reject(new Error(`Unexpected response: ${data}`));
           }
-        });
+        };
+
+        serial.on('data', onData);
       });
     });
   }

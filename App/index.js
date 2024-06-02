@@ -44,34 +44,50 @@ const main = async () => {
 
     const { serial } = obdDevice;
 
-    try {
-      // Request supported PIDs
-      const supportedPIDs = await getSupportedPIDs(serial);
-      console.log('Supported PIDs:', supportedPIDs);
 
-      const allPIDValues = await getSupportedPidValues(serial);
-      console.log(JSON.stringify(allPIDValues, null, 2));
+    serial.on('open', async () => {
+      try {
+        const supportedPIDs = await getSupportedPIDs(serial);
+        console.log('Supported PIDs:', supportedPIDs);
 
-      promptSaveToFile(allPIDValues);
+        const allPIDValues = await getSupportedPidValues(serial);
+        console.log(JSON.stringify(allPIDValues, null, 2));
+        promptSaveToFile(allPIDValues);
+      } catch (error) {
+        console.error(error.message);
+      } finally {
+        serial.close();
+      }
+    })
 
-      // Check if PID 0D is supported
-      // if (supportedPIDs.includes('0D')) {
-      //   console.log('PID 0D is supported, requesting vehicle speed...');
-      //   requestData('0D', serial); // PID for vehicle speed
-      // } else {
-      //   console.log('PID 0D is not supported.');
-      // }
-    } catch (verificationError) {
-      console.log('Verification failed:', verificationError);
-      disconnectOBD(serial);
-      return;
-    }
+  //   try {
+  //     // Request supported PIDs
+  //     const supportedPIDs = await getSupportedPIDs(serial);
+  //     console.log('Supported PIDs:', supportedPIDs);
 
-    // Wait for some time to ensure data is received before disconnecting
-    setTimeout(() => {
-      disconnectOBD(serial);
-      console.log('Disconnected.');
-    }, 15000); // Adjust the timeout as needed to ensure data reception
+  //     const allPIDValues = await getSupportedPidValues(serial);
+  //     console.log(JSON.stringify(allPIDValues, null, 2));
+
+  //     promptSaveToFile(allPIDValues);
+
+  //     // Check if PID 0D is supported
+  //     // if (supportedPIDs.includes('0D')) {
+  //     //   console.log('PID 0D is supported, requesting vehicle speed...');
+  //     //   requestData('0D', serial); // PID for vehicle speed
+  //     // } else {
+  //     //   console.log('PID 0D is not supported.');
+  //     // }
+  //   } catch (verificationError) {
+  //     console.log('Verification failed:', verificationError);
+  //     disconnectOBD(serial);
+  //     return;
+  //   }
+
+  //   // Wait for some time to ensure data is received before disconnecting
+  //   setTimeout(() => {
+  //     disconnectOBD(serial);
+  //     console.log('Disconnected.');
+  //   }, 15000); // Adjust the timeout as needed to ensure data reception
 
   } catch (error) {
     console.error('Error:', error);
