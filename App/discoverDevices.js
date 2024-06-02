@@ -76,7 +76,6 @@ const identifyOBDDevice = async (devices) => {
   throw new Error('No OBD-II device found');
 };
 
-
 module.exports = {
   discoverDevices,
   identifyOBDDevice,
