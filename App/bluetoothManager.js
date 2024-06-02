@@ -2,11 +2,34 @@ const { MODE_1_PIDS } = require('./Modes/mode-1-pids');
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+  // // No echo
+  // conn.write('ATE0');
+  // // Remove linefeeds
+  // conn.write('ATL0');
+  // // This disables spaces in in output, which is faster!
+  // conn.write('ATS0');
+  // // Turns off headers and checksum to be sent.
+  // conn.write('ATH0');
+  // // Turn adaptive timing to 2. This is an aggressive learn curve for adjusting
+  // // the timeout. Will make huge difference on slow systems.
+  // conn.write('ATAT2');
+  // // Set timeout to 10 * 4 = 40msec, allows +20 queries per second. This is
+  // // the maximum wait-time. ATAT will decide if it should wait shorter or not.
+  // conn.write('ATST0A');
+  // // Use this to set protocol automatically, python-OBD uses "ATSPA8", but
+  // // seems to have issues. Maybe this should be an option we can pass?
+  // conn.write('ATSP0');
+
 const sendInitializationCommands = async (serial) => {
   const commands = [
-    'ATZ',  // Reset
-    'ATE0', // Echo off
-    'ATSP0' // Set protocol to automatic
+    'ATZ',    // Reset the OBD-II adapter
+    'ATE0',   // Turn off echo
+    'ATL0',   // Turn off line feed
+    'ATS0',   // Turn off spaces
+    'ATH0',   // Turn off headers
+    'ATSP0',  // Set protocol to auto
+    'ATAT2',
+    'ATST0A',
   ];
 
   for (const command of commands) {
@@ -33,7 +56,7 @@ const sendInitializationCommands = async (serial) => {
         serial.on('data', onData);
       });
     });
-    await delay(500); // Introduce a delay of 500ms between commands
+    // await delay(500); // Introduce a delay of 500ms between commands
   }
 };
 
@@ -167,7 +190,7 @@ const getSupportedPidValues = async (serial, supportedPIDs) => {
         serial.on('data', onData);
       });
     });
-    await delay(500); // Introduce a delay of 500ms between requests
+    // await delay(500); // Introduce a delay of 500ms between requests
   }
 
   return pidValues;
