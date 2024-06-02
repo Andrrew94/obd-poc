@@ -1,10 +1,49 @@
 const { MODE_1_PIDS } = require('./Modes/mode-1-pids');
 
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const sendInitializationCommands = async (serial) => {
+  const commands = [
+    'ATZ',  // Reset
+    'ATE0', // Echo off
+    'ATSP0' // Set protocol to automatic
+  ];
+
+  for (const command of commands) {
+    await new Promise((resolve, reject) => {
+      console.log('Sending initialization command:', command);
+      serial.write(Buffer.from(`${command}\r`), (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        const onData = (buffer) => {
+          const data = buffer.toString('utf8').trim();
+          console.log('Initialization response:', data);
+          if (data.includes('OK') || data === '' || data.includes('ELM327') || data === command) {
+            serial.off('data', onData);
+            resolve();
+          } else {
+            serial.off('data', onData);
+            reject(new Error(`Unexpected initialization response: ${data}`));
+          }
+        };
+
+        serial.on('data', onData);
+      });
+    });
+    await delay(500); // Introduce a delay of 500ms between commands
+  }
+};
+
 const disconnectOBD = (serialConnection) => {
   if (serialConnection.isOpen()) {
     serialConnection.close(() => {
       console.log('Disconnected from OBD-II adapter');
     });
+  } else {
+    console.log('Serial connection was already closed.');
   }
 };
 
@@ -52,7 +91,7 @@ const getSupportedPIDs = (serial) => {
     const pidsToRequest = ['0100', '0120', '0140', '0160'];
     let currentRequestIndex = 0;
 
-    const nextRequest = () => {
+    const nextRequest = async () => {
       if (currentRequestIndex >= pidsToRequest.length) {
         resolve(supportedPIDs);
         return;
@@ -69,6 +108,7 @@ const getSupportedPIDs = (serial) => {
     nextRequest();
   });
 };
+
 // Utility function to interpret PID values
 const interpretPID = (pid, response) => {
   const pidInfo = MODE_1_PIDS[pid];
@@ -77,7 +117,7 @@ const interpretPID = (pid, response) => {
     throw new Error(`No formula defined for PID ${pid}`);
   }
 
-  // determining the number of parameters the PID formula needs, formula defined in the MODE_1_PIDS
+   // determining the number of parameters the PID formula needs, formula defined in the MODE_1_PIDS
   const formulaFunction = pidInfo.Formula;
   const numArgs = formulaFunction.length;
   const args = [];
@@ -103,6 +143,7 @@ const getSupportedPidValues = async (serial, supportedPIDs) => {
 
         const onData = (buffer) => {
           const data = buffer.toString('utf8').trim();
+          console.log('Data received for PID', pid, ':', data);
           if (data.startsWith('41')) {
             serial.off('data', onData);
             const responseBytes = data.slice(3).match(/.{1,2}/g).map(byte => parseInt(byte, 16));
@@ -126,6 +167,7 @@ const getSupportedPidValues = async (serial, supportedPIDs) => {
         serial.on('data', onData);
       });
     });
+    await delay(500); // Introduce a delay of 500ms between requests
   }
 
   return pidValues;
@@ -135,4 +177,5 @@ module.exports = {
   disconnectOBD,
   getSupportedPidValues,
   getSupportedPIDs,
+  sendInitializationCommands,
 };
