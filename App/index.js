@@ -1,5 +1,4 @@
-// index.js
-const { disconnectOBD, getSupportedPIDs } = require('./bluetoothManager');
+const { disconnectOBD, getSupportedPIDs, getSupportedPidValues } = require('./bluetoothManager');
 const { discoverDevices, identifyOBDDevice } = require('./discoverDevices');
 
 const main = async () => {
@@ -21,6 +20,9 @@ const main = async () => {
       // Request supported PIDs
       const supportedPIDs = await getSupportedPIDs(serial);
       console.log('Supported PIDs:', supportedPIDs);
+
+      const allPIDValues = await getAllPIDValues(serial);
+      console.log(JSON.stringify(allPIDValues, null, 2));
 
       // Check if PID 0D is supported
       // if (supportedPIDs.includes('0D')) {

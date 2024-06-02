@@ -1,9 +1,9 @@
-// bluetoothManager.js
 // const bluetooth = require('bluetooth-serial-port');
 // const SerialPort = bluetooth.BluetoothSerialPort;
 
 // const serial = new SerialPort();
 // let isConnected = false;
+const { MODE_1_PIDS } = require('./Modes/mode-1-pids');
 let currentDataHandler = null;
 let buffer = '';
 
@@ -112,47 +112,107 @@ const getSupportedPIDs = (serial) => {
   });
 };
 
-const requestData = (pid, serialConnection) => {
-  if (serialConnection) {
-    const command = Buffer.from(`01${pid}\r`, 'utf8');
-    serialConnection.write(command, (err, bytesWritten) => {
-      if (err) {
-        console.log('Error sending command:', err);
-      } else {
-        console.log(`Sent ${bytesWritten} bytes to request data for PID ${pid}`);
-      }
-    });
+// Utility function to interpret PID values
+const interpretPID = (pid, response) => {
+  const pidInfo = MODE_1_PIDS[pid];
 
-    buffer = '';
-    currentDataHandler = (data) => {
-      buffer += data.toString('utf8');
-      const responses = buffer.split('\r');
-      buffer = responses.pop(); // Keep incomplete response in buffer
-
-      for (let response of responses) {
-        response = response.trim();
-        console.log('Received data:', response);
-
-        // Here you can add more sophisticated parsing and handling of the response
-        // Example: parsing the vehicle speed from the response
-        if (response.startsWith('41 0D')) {
-          const speedHex = response.split(' ')[2];
-          const speed = parseInt(speedHex, 16);
-          console.log(`Vehicle Speed: ${speed} km/h`);
-        }
-      }
-    };
-
-    serialConnection.on('data', currentDataHandler);
-  } else {
-    console.log('Not connected to OBD-II adapter');
+  if (!pidInfo || typeof pidInfo.Formula !== 'function') {
+    throw new Error(`No formula defined for PID ${pid}`);
   }
+
+  // determining the number of parameters the PID formula needs, formula defined in the MODE_1_PIDS
+  const formulaFunction = pidInfo.Formula;
+  const numArgs = formulaFunction.length;
+  const args = [];
+
+  for (let i = 0; i < numArgs; i++) {
+    args.push(response[i]);
+  }
+
+  return formulaFunction(...args);
 };
+
+// array of promises to request all supported pids values
+const getSupportedPidValues = async (supportedPIDs, serial) => {
+  const pidValues = [];
+
+  for (let i = 0; i < supportedPIDs.length; i++) {
+    const pid = supportedPIDs[i];
+    await new Promise((resolve, reject) => {
+      serial.write(Buffer.from(`${pid}\r`), (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        serial.on('data', (buffer) => {
+          const data = buffer.toString('utf8').trim();
+          if (data.startsWith('41')) {
+            const responseBytes = data.slice(3).match(/.{1,2}/g).map(byte => parseInt(byte, 16));
+            try {
+              const interpretedValue = interpretPID(pid, responseBytes);
+              pidValues.push({
+                PID: pid,
+                Description: pids[pid].Description,
+                Value: interpretedValue
+              });
+              resolve();
+            } catch (error) {
+              reject(error);
+            }
+          } else {
+            reject(new Error(`Unexpected response: ${data}`));
+          }
+        });
+      });
+    });
+  }
+
+  return pidValues;
+};
+
+// const requestData = (pid, serialConnection) => {
+//   if (serialConnection) {
+//     const command = Buffer.from(`01${pid}\r`, 'utf8');
+//     serialConnection.write(command, (err, bytesWritten) => {
+//       if (err) {
+//         console.log('Error sending command:', err);
+//       } else {
+//         console.log(`Sent ${bytesWritten} bytes to request data for PID ${pid}`);
+//       }
+//     });
+
+//     buffer = '';
+//     currentDataHandler = (data) => {
+//       buffer += data.toString('utf8');
+//       const responses = buffer.split('\r');
+//       buffer = responses.pop(); // Keep incomplete response in buffer
+
+//       for (let response of responses) {
+//         response = response.trim();
+//         console.log('Received data:', response);
+
+//         // Here you can add more sophisticated parsing and handling of the response
+//         // Example: parsing the vehicle speed from the response
+//         if (response.startsWith('41 0D')) {
+//           const speedHex = response.split(' ')[2];
+//           const speed = parseInt(speedHex, 16);
+//           console.log(`Vehicle Speed: ${speed} km/h`);
+//         }
+//       }
+//     };
+
+//     serialConnection.on('data', currentDataHandler);
+//   } else {
+//     console.log('Not connected to OBD-II adapter');
+//   }
+// };
 
 module.exports = {
   // connectToOBD,
   disconnectOBD,
+  getSupportedPidValues,
   // verifyOBDConnection,
   getSupportedPIDs,
-  requestData,
+  // requestData,
 };
