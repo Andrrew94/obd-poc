@@ -4,8 +4,6 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "flatten-parse": "node flattedParser.js",
-    "decode": "nodemon decoder.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -14,7 +12,6 @@
   "dependencies": {
     "@abandonware/noble": "^1.9.2-25",
     "bluetooth-hci-socket": "^0.5.1",
-    "flatted": "^3.3.1",
     "net": "^1.0.2",
     "noble": "^1.9.1",
     "node-gyp": "^10.1.0",
