@@ -1,48 +1,30 @@
-const noble = require('noble');
+const noble = require('@abandonware/noble');
 const readline = require('readline');
 const fs = require('fs');
 
-  // // No echo
-  // conn.write('ATE0');
-  // // Remove linefeeds
-  // conn.write('ATL0');
-  // // This disables spaces in in output, which is faster!
-  // conn.write('ATS0');
-  // // Turns off headers and checksum to be sent.
-  // conn.write('ATH0');
-  // // Turn adaptive timing to 2. This is an aggressive learn curve for adjusting
-  // // the timeout. Will make huge difference on slow systems.
-  // conn.write('ATAT2');
-  // // Set timeout to 10 * 4 = 40msec, allows +20 queries per second. This is
-  // // the maximum wait-time. ATAT will decide if it should wait shorter or not.
-  // conn.write('ATST0A');
-  // // Use this to set protocol automatically, python-OBD uses "ATSPA8", but
-  // // seems to have issues. Maybe this should be an option we can pass?
-  // conn.write('ATSP0');
-
 // Commands
-const initCommands = [
-  'ATZ',    // Reset the OBD-II adapter
-  'ATE0',   // Turn off echo
-  'ATL0',   // Turn off line feed
-  'ATS0',   // Turn off spaces
-  'ATH0',   // Turn off headers
-  'ATSP0',  // Set protocol to auto
-  'ATAT2',
-  'ATST0A',
-];
+const initCommands = ['ATZ', 'ATE0', 'ATL0', 'ATS0', 'ATH0', 'ATSP0', 'ATAT2', 'ATST0A'];
 const supportedPidCommands = ['0100', '0120', '0140', '0160'];
 
 let obdPeripheral;
-let characteristic;
+let writeCharacteristic;
+let readCharacteristic;
 
 async function sendCommand(command) {
   return new Promise((resolve, reject) => {
-    if (!characteristic) return reject('Characteristic not found');
+    if (!writeCharacteristic || !readCharacteristic) return reject('Characteristics not found');
     const cmd = Buffer.from(`${command}\r`, 'utf8');
-    characteristic.write(cmd, false, (error) => {
+    console.log(`Sending command: ${command}`);
+    writeCharacteristic.write(cmd, false, (error) => {
       if (error) return reject(error);
-      characteristic.once('data', (data) => resolve(data.toString('utf8')));
+      setTimeout(() => {
+        readCharacteristic.read((error, data) => {
+          if (error) return reject(error);
+          const response = data.toString('utf8').trim();
+          console.log(`Raw response: ${response}`);
+          resolve(response);
+        });
+      }, 500); // Adjust the delay if needed
     });
   });
 }
@@ -117,10 +99,18 @@ async function connectToObd() {
       console.log('Connected to OBD device');
       obdPeripheral.discoverAllServicesAndCharacteristics(async (error, services, characteristics) => {
         if (error) return reject(error);
-        characteristic = characteristics.find((c) => c.properties.includes('write') && c.properties.includes('notify'));
-        characteristic.subscribe((error) => {
-          if (error) return reject(error);
-        });
+        console.log('Available characteristics:', characteristics);
+
+        writeCharacteristic = characteristics.find((c) => c.properties.includes('write'));
+        readCharacteristic = characteristics.find((c) => c.properties.includes('read'));
+
+        if (!writeCharacteristic || !readCharacteristic) {
+          return reject('No suitable characteristics found');
+        }
+
+        console.log('Selected write characteristic:', writeCharacteristic);
+        console.log('Selected read characteristic:', readCharacteristic);
+
         await initializeObd();
         const supportedPids = await getSupportedPids();
         const pidValues = await getPidValues(supportedPids);
