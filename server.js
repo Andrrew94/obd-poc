@@ -1,8 +1,9 @@
 const noble = require('@abandonware/noble');
+const readline = require('readline');
+const fs = require('fs');
 
 let responseBuffer = '';
 let waitingForResponse = false;
-
 
 async function connectToObd() {
   noble.on('stateChange', (state) => {
@@ -56,12 +57,21 @@ async function connectToObd() {
           await initializeObdAdapter(writeCharacteristic);
 
           // Scan for supported PIDs
-          const supportedPids = await scanForSupportedPids(writeCharacteristic, adaptorName);
+          const { supportedPids, allPidResponses } = await scanForSupportedPids(writeCharacteristic);
+
+          // Print the supported PIDs and the full list of PID responses
+          console.log('Supported PIDs:', supportedPids);
+          console.log('All PID responses:', allPidResponses);
+
+          // Filter out the mode 01 PID identifiers
+          const filteredSupportedPids = supportedPids.filter(pid => !['0100', '0120', '0140', '0160'].includes(pid));
 
           // Query each supported PID
-          // const data = await querySupportedPids(writeCharacteristic, supportedPids);
+          const pidValues = await querySupportedPids(writeCharacteristic, filteredSupportedPids);
+          console.log('PID Values:', pidValues);
 
-          console.log('supportedPids', supportedPids);
+          // Prompt to save the PID values to a JSON file
+          promptSaveJson(pidValues);
 
           process.exit(0);
         });
@@ -113,13 +123,12 @@ async function initializeObdAdapter(writeCharacteristic) {
 
 async function scanForSupportedPids(writeCharacteristic) {
   const supportedPids = [];
-  const responsesToLog = [];
+  const allPidResponses = [];
   for (let i = 0; i <= 0x60; i += 0x20) {
     const pid = `01${i.toString(16).padStart(2, '0')}`;
     const response = await sendObdCommand(writeCharacteristic, pid);
     if (response) {
-      // todo: remove this after debug
-      responsesToLog.push(response);
+      allPidResponses.push({ pid, response });
 
       const match = response.match(/41[0-9A-F]{2}([0-9A-F]{8})/);
       if (match) {
@@ -138,20 +147,19 @@ async function scanForSupportedPids(writeCharacteristic) {
     }
   }
 
-  return supportedPids;
+  return { supportedPids, allPidResponses };
 }
 
-
-// async function querySupportedPids(writeCharacteristic, pids) {
-//   const data = {};
-//   for (const pid of pids) {
-//     const response = await sendObdCommand(writeCharacteristic, pid);
-//     if (response && !response.includes('NO DATA')) {
-//       data[pid] = response;
-//     }
-//   }
-//   return data;
-// }
+async function querySupportedPids(writeCharacteristic, pids) {
+  const pidValues = {};
+  for (const pid of pids) {
+    const response = await sendObdCommand(writeCharacteristic, pid);
+    if (response && !response.includes('NO DATA')) {
+      pidValues[pid] = response;
+    }
+  }
+  return pidValues;
+}
 
 async function sendObdCommand(writeCharacteristic, command) {
   return new Promise((resolve, reject) => {
@@ -183,6 +191,24 @@ async function sendObdCommand(writeCharacteristic, command) {
         checkResponse();
       }
     });
+  });
+}
+
+function promptSaveJson(data) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+  rl.question('Do you want to save the PID values to a JSON file? (yes/no) ', (answer) => {
+    if (answer.toLowerCase() === 'yes') {
+      rl.question('Enter the JSON file name: ', (filename) => {
+        fs.writeFileSync(`${filename}.json`, JSON.stringify(data, null, 2));
+        console.log(`PID values saved to ${filename}.json`);
+        rl.close();
+      });
+    } else {
+      rl.close();
+    }
   });
 }
 
