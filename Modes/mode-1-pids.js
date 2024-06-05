@@ -368,56 +368,56 @@ const MODE_1_PIDS = {
       Description: "Oxygen Sensor 1 A: Voltage B: Fuel–Air Equivalence Ratio",
       DataType: "Voltage/Ratio",
       Unit: "V",
-      Formula: function (A, B) { return { voltage: A / 200, ratio: (2 / 65536) * (B * 256 + C) }; }
+      Formula: function (A, B, C) { return { voltage: A / 200, ratio: (2 / 65536) * (B * 256 + C) }; }
     },
     "35": {
       PID: "35",
       Description: "Oxygen Sensor 2 A: Voltage B: Fuel–Air Equivalence Ratio",
       DataType: "Voltage/Ratio",
       Unit: "V",
-      Formula: function (A, B) { return { voltage: A / 200, ratio: (2 / 65536) * (B * 256 + C) }; }
+      Formula: function (A, B, C) { return { voltage: A / 200, ratio: (2 / 65536) * (B * 256 + C) }; }
     },
     "36": {
       PID: "36",
       Description: "Oxygen Sensor 3 A: Voltage B: Fuel–Air Equivalence Ratio",
       DataType: "Voltage/Ratio",
       Unit: "V",
-      Formula: function (A, B) { return { voltage: A / 200, ratio: (2 / 65536) * (B * 256 + C) }; }
+      Formula: function (A, B, C) { return { voltage: A / 200, ratio: (2 / 65536) * (B * 256 + C) }; }
     },
     "37": {
       PID: "37",
       Description: "Oxygen Sensor 4 A: Voltage B: Fuel–Air Equivalence Ratio",
       DataType: "Voltage/Ratio",
       Unit: "V",
-      Formula: function (A, B) { return { voltage: A / 200, ratio: (2 / 65536) * (B * 256 + C) }; }
+      Formula: function (A, B, C) { return { voltage: A / 200, ratio: (2 / 65536) * (B * 256 + C) }; }
     },
     "38": {
       PID: "38",
       Description: "Oxygen Sensor 5 A: Voltage B: Fuel–Air Equivalence Ratio",
       DataType: "Voltage/Ratio",
       Unit: "V",
-      Formula: function (A, B) { return { voltage: A / 200, ratio: (2 / 65536) * (B * 256 + C) }; }
+      Formula: function (A, B, C) { return { voltage: A / 200, ratio: (2 / 65536) * (B * 256 + C) }; }
     },
     "39": {
       PID: "39",
       Description: "Oxygen Sensor 6 A: Voltage B: Fuel–Air Equivalence Ratio",
       DataType: "Voltage/Ratio",
       Unit: "V",
-      Formula: function (A, B) { return { voltage: A / 200, ratio: (2 / 65536) * (B * 256 + C) }; }
+      Formula: function (A, B, C) { return { voltage: A / 200, ratio: (2 / 65536) * (B * 256 + C) }; }
     },
     "3A": {
       PID: "3A",
       Description: "Oxygen Sensor 7 A: Voltage B: Fuel–Air Equivalence Ratio",
       DataType: "Voltage/Ratio",
       Unit: "V",
-      Formula: function (A, B) { return { voltage: A / 200, ratio: (2 / 65536) * (B * 256 + C) }; }
+      Formula: function (A, B, C) { return { voltage: A / 200, ratio: (2 / 65536) * (B * 256 + C) }; }
     },
     "3B": {
       PID: "3B",
       Description: "Oxygen Sensor 8 A: Voltage B: Fuel–Air Equivalence Ratio",
       DataType: "Voltage/Ratio",
       Unit: "V",
-      Formula: function (A, B) { return { voltage: A / 200, ratio: (2 / 65536) * (B * 256 + C) }; }
+      Formula: function (A, B, C) { return { voltage: A / 200, ratio: (2 / 65536) * (B * 256 + C) }; }
     },
     "3C": {
       PID: "3C",

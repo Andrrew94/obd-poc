@@ -1,6 +1,7 @@
 const noble = require('@abandonware/noble');
 const readline = require('readline');
 const fs = require('fs');
+const { MODE_1_PIDS } = require('./Modes/mode-1-pids')
 
 let responseBuffer = '';
 let waitingForResponse = false;
@@ -70,10 +71,12 @@ async function connectToObd() {
           const pidValues = await querySupportedPids(writeCharacteristic, filteredSupportedPids);
           console.log('PID Values:', pidValues);
 
-          // Prompt to save the PID values to a JSON file
-          promptSaveJson(pidValues);
+          // Interpret PID values
+          const interpretedValues = interpretPidValues(pidValues);
+          console.log('Interpreted PID Values:', interpretedValues);
 
-          process.exit(0);
+          // Prompt to save the interpreted PID values to a JSON file
+          promptSaveJson(interpretedValues);
         });
       });
 
@@ -192,6 +195,50 @@ async function sendObdCommand(writeCharacteristic, command) {
       }
     });
   });
+}
+
+function interpretPidValues(pidValues) {
+  const interpretedValues = [];
+
+  for (const [pid, rawValue] of Object.entries(pidValues)) {
+    // Correctly clean the value by removing the '41' and PID part from the response
+    const cleanedValue = rawValue.slice(4, rawValue.length - 1).trim(); // Removes the first 4 characters and the trailing '>'
+
+    // Convert the cleaned value to a list of byte values
+    const byteValues = [];
+    for (let i = 0; i < cleanedValue.length; i += 2) {
+      byteValues.push(parseInt(cleanedValue.slice(i, i + 2), 16));
+    }
+
+    // Debug: Log cleaned value and byte values
+    console.log(`PID: ${pid}, Raw Value: ${rawValue}, Cleaned Value: ${cleanedValue}, Byte Values: ${byteValues.join(',')}`);
+
+    // Find the PID info from MODE_1_PIDS
+    const pidInfo = MODE_1_PIDS[pid.slice(2).toUpperCase()];
+    if (pidInfo) {
+      // Determine the number of arguments the formula requires
+      const formula = pidInfo.Formula;
+      const formulaArgs = formula.length;
+
+      // Debug: Log formula arguments count and byte values used
+      console.log(`PID: ${pid}, Formula Args: ${formulaArgs}, Bytes Used: ${byteValues.slice(0, formulaArgs).join(',')}`);
+
+      // Call the formula with the appropriate number of arguments
+      const value = formula.apply(null, byteValues.slice(0, formulaArgs));
+
+      interpretedValues.push({
+        pid: pid,
+        description: pidInfo.Description,
+        unit: pidInfo.Unit,
+        value: value
+      });
+    } else {
+      // Handle case where PID info is not found
+      console.warn(`PID info not found for ${pid}`);
+    }
+  }
+
+  return interpretedValues;
 }
 
 function promptSaveJson(data) {
