@@ -1,0 +1,203 @@
+[
+  {
+    "pid": "0101",
+    "description": "Monitor status since DTCs cleared",
+    "unit": "",
+    "value": null
+  },
+  {
+    "pid": "0102",
+    "description": "Freeze DTC",
+    "unit": "",
+    "value": null
+  },
+  {
+    "pid": "0103",
+    "description": "Fuel system status",
+    "unit": "",
+    "value": null
+  },
+  {
+    "pid": "0104",
+    "description": "Calculated engine load",
+    "unit": "%",
+    "value": 24.705882352941178
+  },
+  {
+    "pid": "0105",
+    "description": "Engine coolant temperature",
+    "unit": "°C",
+    "value": 88
+  },
+  {
+    "pid": "0106",
+    "description": "Short term fuel trim—Bank 1",
+    "unit": "%",
+    "value": -3.125
+  },
+  {
+    "pid": "010b",
+    "description": "Intake manifold absolute pressure",
+    "unit": "kPa",
+    "value": 32
+  },
+  {
+    "pid": "010c",
+    "description": "Engine RPM",
+    "unit": "rpm",
+    "value": 546.25
+  },
+  {
+    "pid": "010d",
+    "description": "Vehicle speed",
+    "unit": "km/h",
+    "value": 0
+  },
+  {
+    "pid": "010e",
+    "description": "Timing advance",
+    "unit": "°",
+    "value": 7.5
+  },
+  {
+    "pid": "010f",
+    "description": "Intake air temperature",
+    "unit": "°C",
+    "value": 44
+  },
+  {
+    "pid": "0110",
+    "description": "MAF air flow rate",
+    "unit": "g/s",
+    "value": 1.47
+  },
+  {
+    "pid": "0112",
+    "description": "Commanded secondary air status",
+    "unit": "",
+    "value": null
+  },
+  {
+    "pid": "0114",
+    "description": "Oxygen Sensor 1 A: Voltage B: Short term fuel trim",
+    "unit": "V/%",
+    "value": {
+      "voltage": 0.05,
+      "trim": -92.1875
+    }
+  },
+  {
+    "pid": "011b",
+    "description": "Oxygen Sensor 8 A: Voltage B: Short term fuel trim",
+    "unit": "V/%",
+    "value": {
+      "voltage": 0.05,
+      "trim": -92.1875
+    }
+  },
+  {
+    "pid": "011f",
+    "description": "Run time since engine start",
+    "unit": "seconds",
+    "value": 1173
+  },
+  {
+    "pid": "012d",
+    "description": "EGR Error",
+    "unit": "%",
+    "value": -92.1875
+  },
+  {
+    "pid": "012e",
+    "description": "Commanded evaporative purge",
+    "unit": "%",
+    "value": 23.92156862745098
+  },
+  {
+    "pid": "012f",
+    "description": "Fuel level input",
+    "unit": "%",
+    "value": 83.92156862745098
+  },
+  {
+    "pid": "0130",
+    "description": "Number of warm-ups since codes cleared",
+    "unit": "",
+    "value": 255
+  },
+  {
+    "pid": "0133",
+    "description": "Absolute barometric pressure",
+    "unit": "kPa",
+    "value": 101
+  },
+  {
+    "pid": "013b",
+    "description": "Oxygen Sensor 8 A: Voltage B: Fuel–Air Equivalence Ratio",
+    "unit": "V",
+    "value": {
+      "voltage": 0.05,
+      "ratio": null
+    }
+  },
+  {
+    "pid": "0141",
+    "description": "Monitor status this drive cycle",
+    "unit": "",
+    "value": null
+  },
+  {
+    "pid": "0142",
+    "description": "Control module voltage",
+    "unit": "V",
+    "value": 14.081
+  },
+  {
+    "pid": "0143",
+    "description": "Absolute load value",
+    "unit": "%",
+    "value": 14.509803921568627
+  },
+  {
+    "pid": "0144",
+    "description": "Fuel–Air commanded equivalence ratio",
+    "unit": "",
+    "value": 1.01690673828125
+  },
+  {
+    "pid": "0146",
+    "description": "Ambient air temperature",
+    "unit": "°C",
+    "value": -30
+  },
+  {
+    "pid": "0149",
+    "description": "Accelerator pedal position D",
+    "unit": "%",
+    "value": 15.294117647058824
+  },
+  {
+    "pid": "014b",
+    "description": "Accelerator pedal position F",
+    "unit": "%",
+    "value": 3.9215686274509802
+  },
+  {
+    "pid": "0154",
+    "description": "Evaporative system vapor pressure",
+    "unit": "Pa",
+    "value": 642.5
+  },
+  {
+    "pid": "0155",
+    "description": "Short term secondary oxygen sensor trim—Bank 1 and Bank 3",
+    "unit": "%",
+    "value": 0
+  },
+  {
+    "pid": "015f",
+    "description": "Emission requirements to which vehicle is designed",
+    "unit": "",
+    "value": null
+  }
+]

@@ -1,4 +1,4 @@
-const { sendObdCommand } = require('../server');
+const { sendObdCommand } = require('../utils');
 
 async function queryMode9SupportedPids(writeCharacteristic) {
     const response = await sendObdCommand(writeCharacteristic, '0900');

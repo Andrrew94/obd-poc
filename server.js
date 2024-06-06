@@ -4,9 +4,7 @@ const fs = require('fs');
 const { interpretPidValues, querySupportedPids, scanForSupportedPids } = require('./Modes/mode-1-handler');
 const { queryMode3, interpretMode3Results } = require('./Modes/mode-3-handler');
 const { queryMode9SupportedPids, queryAndInterpretMode9Pids } = require('./Modes/mode-9-handler');
-
-let responseBuffer = '';
-let waitingForResponse = false;
+const { sendObdCommand } = require('./utils');
 
 async function connectToObd() {
     noble.on('stateChange', (state) => {
@@ -108,39 +106,6 @@ async function initializeObdAdapter(writeCharacteristic) {
     }
 }
 
-async function sendObdCommand(writeCharacteristic, command) {
-    return new Promise((resolve, reject) => {
-        const cmd = Buffer.from(`${command}\r`, 'utf-8');
-        console.log(`Sending command: ${command}`);
-        responseBuffer = '';  // Clear the buffer before sending the command
-        waitingForResponse = true;
-
-        writeCharacteristic.write(cmd, true, (error) => {
-            if (error) {
-                reject(error);
-            } else {
-                const timeout = setTimeout(() => {
-                    if (waitingForResponse) {
-                        waitingForResponse = false;
-                        console.error('Response timeout');
-                        resolve(responseBuffer);  // Resolve with whatever data was collected
-                    }
-                }, 3000); // 3 seconds timeout for response
-
-                const checkResponse = () => {
-                    if (!waitingForResponse) {
-                        clearTimeout(timeout);
-                        resolve(responseBuffer);
-                    } else {
-                        setTimeout(checkResponse, 100);  // Check again after 100ms
-                    }
-                };
-                checkResponse();
-            }
-        });
-    });
-}
-
 function promptSaveJson(data, mode) {
     const rl = readline.createInterface({
         input: process.stdin,
@@ -204,10 +169,6 @@ function promptForModeSelection(writeCharacteristic) {
         }
     });
 }
-
-module.exports = {
-  sendObdCommand,
-};
 
 // Start the process
 connectToObd();

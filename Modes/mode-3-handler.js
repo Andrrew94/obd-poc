@@ -1,4 +1,4 @@
-const { sendObdCommand } = require('../server');
+const { sendObdCommand } = require('../utils');
 
 async function queryMode3(writeCharacteristic) {
     const response = await sendObdCommand(writeCharacteristic, '03');

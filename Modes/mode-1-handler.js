@@ -1,5 +1,5 @@
 const { MODE_1_PIDS } = require('../Pids/mode-1-pids');
-const { sendObdCommand } = require('../server');
+const { sendObdCommand } = require('../utils');
 
 async function scanForSupportedPids(writeCharacteristic) {
     const supportedPids = [];
